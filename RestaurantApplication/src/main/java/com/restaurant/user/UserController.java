@@ -11,7 +11,7 @@ import java.util.Optional;
 public class UserController {
     private final UserRepository userRepository;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(final UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
