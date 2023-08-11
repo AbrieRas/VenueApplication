@@ -18,6 +18,12 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "NAME")
+    private String name;
+
+    @Column(name = "ZIP_CODE")
+    private String zipCode;
+
     // Scores are on a scale of 1 to 5
     @Column(name = "PEANUT_ALLERGY_SCORE")
     private Integer peanutAllergyScore;
