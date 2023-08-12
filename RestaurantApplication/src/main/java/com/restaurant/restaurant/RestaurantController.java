@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +25,8 @@ public class RestaurantController {
 
     // Create
     @PostMapping(value = "/add")
-    public ResponseEntity<Restaurant> addRestaurant(@RequestBody Restaurant restaurant) {
-        boolean restaurantNameAndZipCodeExists = this.restaurantRepository.existsByDistinctRestaurantByNameAndZipCode(
+    public ResponseEntity<RestaurantDTO> addRestaurant(@RequestBody Restaurant restaurant) {
+        boolean restaurantNameAndZipCodeExists = this.restaurantRepository.existsByNameAndZipCode(
                 restaurant.getName(),
                 restaurant.getZipCode()
         );
@@ -35,12 +36,13 @@ public class RestaurantController {
         }
 
         Restaurant restaurantSaved = this.restaurantRepository.save(restaurant);
-        return ResponseEntity.status(HttpStatus.OK).body(restaurantSaved);
+        RestaurantDTO restaurantDTO = this.createRestaurantDTO(restaurantSaved);
+        return ResponseEntity.status(HttpStatus.OK).body(restaurantDTO);
     }
 
     // Read
     @GetMapping(value = "/get/{id}")
-    public ResponseEntity<Restaurant> getRestaurant(@PathVariable Long id) {
+    public ResponseEntity<RestaurantDTO> getRestaurant(@PathVariable Long id) {
         Optional<Restaurant> restaurantOptional = this.restaurantRepository.findById(id.intValue());
 
         if (restaurantOptional.isEmpty()) {
@@ -48,40 +50,47 @@ public class RestaurantController {
         }
 
         Restaurant restaurant = restaurantOptional.get();
-        return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+        RestaurantDTO restaurantDTO = this.createRestaurantDTO(restaurant);
+        return ResponseEntity.status(HttpStatus.OK).body(restaurantDTO);
     }
 
     @GetMapping(value = "/get")
-    public ResponseEntity<List<Restaurant>> getRestaurantByZipAndAllergyScore(
+    public ResponseEntity<List<RestaurantDTO>> getRestaurantByZipAndAllergyScore(
             @RequestParam String zipCode,
             @RequestParam String allergyType
     ) {
+        if (zipCode == null || allergyType == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        List<Restaurant> restaurantsFound;
+
         switch (allergyType) {
             case "peanut": {
-                List<Restaurant> restaurantsFound = this.restaurantRepository.findRestaurantByZipCodeAndPeanutAllergyScoreNotNullDesc(
+                restaurantsFound = this.restaurantRepository.findByZipCodeAndPeanutAllergyScoreNotNullOrderByNameDesc(
                         zipCode
                 );
-
-                return ResponseEntity.status(HttpStatus.OK).body(restaurantsFound);
+                break;
             }
             case "egg": {
-                List<Restaurant> restaurantsFound = this.restaurantRepository.findRestaurantByZipCodeAndEggAllergyScoreNotNullDesc(
+                 restaurantsFound = this.restaurantRepository.findByZipCodeAndEggAllergyScoreNotNullOrderByNameDesc(
                         zipCode
                 );
-
-                return ResponseEntity.status(HttpStatus.OK).body(restaurantsFound);
+                break;
             }
             case "dairy": {
-                List<Restaurant> restaurantsFound = this.restaurantRepository.findRestaurantByZipCodeAndDairyAllergyScoreNotNullDesc(
+                restaurantsFound = this.restaurantRepository.findByZipCodeAndDairyAllergyScoreNotNullOrderByNameDesc(
                         zipCode
                 );
-
-                return ResponseEntity.status(HttpStatus.OK).body(restaurantsFound);
+                break;
             }
             default: {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
         }
+
+        List<RestaurantDTO> restaurantDTOs = this.createRestaurantDTO(restaurantsFound);
+        return ResponseEntity.status(HttpStatus.OK).body(restaurantDTOs);
     }
     
     /*
@@ -93,4 +102,58 @@ public class RestaurantController {
      Delete
      NOT GOING TO BE IMPLEMENTED AT THIS STAGE
     */
+
+    private RestaurantDTO createRestaurantDTO(Restaurant restaurant) {
+        RestaurantDTO restaurantDTO = new RestaurantDTO();
+
+        restaurantDTO.setId(restaurant.getId());
+
+        if (restaurant.getName() != null) {
+            restaurantDTO.setName(restaurant.getName());
+        }
+        if (restaurant.getZipCode() != null) {
+            restaurantDTO.setZipCode(restaurant.getZipCode());
+        }
+        if (restaurant.getPeanutAllergyScore() != null) {
+            restaurantDTO.setPeanutAllergyScore(restaurant.getPeanutAllergyScore());
+        }
+        if (restaurant.getEggAllergyScore() != null) {
+            restaurantDTO.setEggAllergyScore(restaurant.getEggAllergyScore());
+        }
+        if (restaurant.getDairyAllergyScore() != null) {
+            restaurantDTO.setDairyAllergyScore(restaurant.getDairyAllergyScore());
+        }
+
+        return restaurantDTO;
+    }
+
+    private List<RestaurantDTO> createRestaurantDTO(List<Restaurant> restaurants) {
+        List<RestaurantDTO> restaurantDTOs = new ArrayList<>();
+
+        for (Restaurant restaurant : restaurants) {
+            RestaurantDTO restaurantDTO = new RestaurantDTO();
+
+            restaurantDTO.setId(restaurant.getId());
+
+            if (restaurant.getName() != null) {
+                restaurantDTO.setName(restaurant.getName());
+            }
+            if (restaurant.getZipCode() != null) {
+                restaurantDTO.setZipCode(restaurant.getZipCode());
+            }
+            if (restaurant.getPeanutAllergyScore() != null) {
+                restaurantDTO.setPeanutAllergyScore(restaurant.getPeanutAllergyScore());
+            }
+            if (restaurant.getEggAllergyScore() != null) {
+                restaurantDTO.setEggAllergyScore(restaurant.getEggAllergyScore());
+            }
+            if (restaurant.getDairyAllergyScore() != null) {
+                restaurantDTO.setDairyAllergyScore(restaurant.getDairyAllergyScore());
+            }
+
+            restaurantDTOs.add(restaurantDTO);
+        }
+
+        return restaurantDTOs;
+    }
 }

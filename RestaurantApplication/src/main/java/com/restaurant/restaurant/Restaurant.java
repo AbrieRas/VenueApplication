@@ -26,11 +26,11 @@ public class Restaurant {
 
     // Scores are on a scale of 1 to 5
     @Column(name = "PEANUT_ALLERGY_SCORE")
-    private Integer peanutAllergyScore;
+    private Float peanutAllergyScore;
 
     @Column(name = "EGG_ALLERGY_SCORE")
-    private Integer eggAllergyScore;
+    private Float eggAllergyScore;
 
     @Column(name = "DAIRY_ALLERGY_SCORE")
-    private Integer dairyAllergyScore;
+    private Float dairyAllergyScore;
 }

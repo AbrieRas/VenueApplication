@@ -1,6 +1,8 @@
 package com.restaurant.diningReview;
 
 import com.restaurant.enums.Status;
+import com.restaurant.restaurant.Restaurant;
+import com.restaurant.restaurant.RestaurantRepository;
 import com.restaurant.user.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +16,16 @@ import java.util.Optional;
 public class DiningReviewController {
     private final DiningReviewRepository diningReviewRepository;
     private final UserRepository userRepository;
+    private final RestaurantRepository restaurantRepository;
 
     public DiningReviewController(
             final DiningReviewRepository diningReviewRepository,
-            final UserRepository userRepository
+            final UserRepository userRepository,
+            final RestaurantRepository restaurantRepository
     ) {
         this.diningReviewRepository = diningReviewRepository;
         this.userRepository = userRepository;
+        this.restaurantRepository = restaurantRepository;
     }
 
     // Create
@@ -28,17 +33,34 @@ public class DiningReviewController {
     public ResponseEntity<DiningReview> addDiningReview(@RequestBody DiningReview diningReview) {
         boolean userRegistered = this.userRepository.existsByDisplayName(diningReview.getReviewer());
 
+        // Return if user isn't registered
         if (!userRegistered) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
+        // Find restaurant by id
+        Optional<Restaurant> restaurantOptional = this.restaurantRepository.findById(
+                diningReview.getRestaurantId().intValue()
+        );
+
+        // Return if restaurant id not found
+        if (restaurantOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        // Update restaurant score
+        Restaurant restaurantToUpdate = restaurantOptional.get();
+        Restaurant restaurantToSave = this.updateRestaurantScores(restaurantToUpdate, diningReview);
+        this.restaurantRepository.save(restaurantToSave);
+
+        // Add dining review
         DiningReview diningReviewSaved = this.diningReviewRepository.save(diningReview);
+
         return ResponseEntity.status(HttpStatus.OK).body(diningReviewSaved);
     }
 
     // Read
-    // ADMIN
-    @GetMapping(value = "/get-received-reviews")
+    @GetMapping(value = "/admin/get-received-reviews")
     public ResponseEntity<List<DiningReview>> getDiningReviewsByReceived() {
         List<DiningReview> diningReviewsReceived = this.diningReviewRepository.findDiningReviewByStatus(Status.RECEIVED);
         return ResponseEntity.status(HttpStatus.OK).body(diningReviewsReceived);
@@ -59,23 +81,42 @@ public class DiningReviewController {
     }
 
     // Update
-    // ADMIN
-    @PutMapping(value = "/update/{id}")
+    @PutMapping(value = "/admin/update/{id}")
     public ResponseEntity<DiningReview> updateDiningReview(@PathVariable Long id, @RequestParam Status status) {
         if (status == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
+        // Find dining review by id
         Optional<DiningReview> diningReviewOptional = this.diningReviewRepository.findById(id.intValue());
 
+        // Return if dining review id not found
         if (diningReviewOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
+        // Update dining review
         DiningReview diningReviewToUpdate = diningReviewOptional.get();
         diningReviewToUpdate.setStatus(status);
 
+        // Find restaurant by id
+        Optional<Restaurant> restaurantOptional = this.restaurantRepository.findById(
+                diningReviewToUpdate.getRestaurantId().intValue()
+        );
+
+        // Return if restaurant id not found
+        if (restaurantOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        // Update restaurant score
+        Restaurant restaurantToUpdate = restaurantOptional.get();
+        Restaurant restaurantToSave = this.updateRestaurantScores(restaurantToUpdate, diningReviewToUpdate);
+        this.restaurantRepository.save(restaurantToSave);
+
+        // Update dining review
         DiningReview diningReviewUpdated = this.diningReviewRepository.save(diningReviewToUpdate);
+
         return ResponseEntity.status(HttpStatus.OK).body(diningReviewUpdated);
     }
 
@@ -83,4 +124,21 @@ public class DiningReviewController {
      Delete
      NOT GOING TO BE IMPLEMENTED AT THIS STAGE
     */
+
+    private Restaurant updateRestaurantScores(Restaurant restaurant, DiningReview diningReview) {
+        if (diningReview.getPeanutAllergyScore() != null) {
+            Float averagePeanutAllergyScore = this.diningReviewRepository.calculateAveragePeanutAllergyScore();
+            restaurant.setPeanutAllergyScore(averagePeanutAllergyScore);
+        }
+        if (diningReview.getEggAllergyScore() != null) {
+            Float averageEggAllergyScore = this.diningReviewRepository.calculateAverageEggAllergyScore();
+            restaurant.setEggAllergyScore(averageEggAllergyScore);
+        }
+        if (diningReview.getDairyAllergyScore() != null) {
+            Float averageDairyAllergyScore = this.diningReviewRepository.calculateAverageDairyAllergyScore();
+            restaurant.setDairyAllergyScore(averageDairyAllergyScore);
+        }
+
+        return restaurant;
+    }
 }

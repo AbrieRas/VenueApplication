@@ -38,7 +38,7 @@ public class UserController {
         }
 
         User userFound = this.userRepository.findDistinctByDisplayName(displayName);
-        UserDTO userDTO = createDTO(userFound);
+        UserDTO userDTO = this.createUserDTO(userFound);
         return ResponseEntity.status(HttpStatus.OK).body(userDTO);
     }
 
@@ -63,7 +63,7 @@ public class UserController {
         }
 
         User userToUpdate = userOptional.get();
-        User userUpdated = updateUser(userToUpdate, user);
+        User userUpdated = this.updateUserProperties(userToUpdate, user);
         return ResponseEntity.status(HttpStatus.OK).body(userUpdated);
     }
 
@@ -72,7 +72,7 @@ public class UserController {
      NOT GOING TO BE IMPLEMENTED AT THIS STAGE
     */
 
-    private User updateUser(User userToUpdate, User userWithUpdate) {
+    private User updateUserProperties(User userToUpdate, User userWithUpdate) {
         if (userWithUpdate.getCity() != null) {
             userToUpdate.setCity(userWithUpdate.getCity());
         }
@@ -96,7 +96,7 @@ public class UserController {
         return userToUpdate;
     }
 
-    private UserDTO createDTO(User user) {
+    private UserDTO createUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
 
         userDTO.setDisplayName(user.getDisplayName());

@@ -1,0 +1,6 @@
+2023-08-12 20:57:06 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DINING_REVIEW" not found (this database is empty); SQL statement:
+select diningrevi0_.id as id1_0_, diningrevi0_.commentary as commenta2_0_, diningrevi0_.dairy_allergy_score as dairy_al3_0_, diningrevi0_.egg_allergy_score as egg_alle4_0_, diningrevi0_.peanut_allergy_score as peanut_a5_0_, diningrevi0_.restaurant_id as restaura6_0_, diningrevi0_.reviewer as reviewer7_0_, diningrevi0_.status as status8_0_ from dining_review diningrevi0_ where diningrevi0_.status=? [42104-214]
+2023-08-12 21:02:41 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DINING_REVIEW" not found (this database is empty); SQL statement:
+select diningrevi0_.id as id1_0_, diningrevi0_.commentary as commenta2_0_, diningrevi0_.dairy_allergy_score as dairy_al3_0_, diningrevi0_.egg_allergy_score as egg_alle4_0_, diningrevi0_.peanut_allergy_score as peanut_a5_0_, diningrevi0_.restaurant_id as restaura6_0_, diningrevi0_.reviewer as reviewer7_0_, diningrevi0_.status as status8_0_ from dining_review diningrevi0_ where diningrevi0_.status=? [42104-214]
