@@ -43,7 +43,7 @@ public class RestaurantController {
     // Read
     @GetMapping(value = "/get/{id}")
     public ResponseEntity<RestaurantDTO> getRestaurant(@PathVariable Long id) {
-        Optional<Restaurant> restaurantOptional = this.restaurantRepository.findById(id.intValue());
+        Optional<Restaurant> restaurantOptional = this.restaurantRepository.findById(id);
 
         if (restaurantOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

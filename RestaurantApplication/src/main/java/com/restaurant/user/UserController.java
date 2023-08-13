@@ -56,7 +56,7 @@ public class UserController {
     // Update
     @PutMapping(value = "/update/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        Optional<User> userOptional = this.userRepository.findById(id.intValue());
+        Optional<User> userOptional = this.userRepository.findById(id);
 
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

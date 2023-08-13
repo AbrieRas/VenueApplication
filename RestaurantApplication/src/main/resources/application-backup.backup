@@ -1,0 +1,19 @@
+server.port=3000
+
+# H2 Database Configuration
+#spring.datasource.url=jdbc:h2:file:./data/testdatabase
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=your_password
+spring.datasource.platform=h2
+#spring.h2.console.enabled=true
+spring.jpa.defer-datasource-initialization=always
+#spring.datasource.schema=classpath:data.sql
+spring.datasource.data=classpath:drop-data.sql
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
+
+# Hibernate properties
+spring.jpa.hibernate.ddl-auto=none
+spring.datasource.initialization-mode=always
+#spring.datasource.data=classpath:drop-database.sql

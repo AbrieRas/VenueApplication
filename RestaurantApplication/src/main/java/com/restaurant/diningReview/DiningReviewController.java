@@ -40,7 +40,7 @@ public class DiningReviewController {
 
         // Find restaurant by id
         Optional<Restaurant> restaurantOptional = this.restaurantRepository.findById(
-                diningReview.getRestaurantId().intValue()
+                diningReview.getRestaurantId()
         );
 
         // Return if restaurant id not found
@@ -88,7 +88,7 @@ public class DiningReviewController {
         }
 
         // Find dining review by id
-        Optional<DiningReview> diningReviewOptional = this.diningReviewRepository.findById(id.intValue());
+        Optional<DiningReview> diningReviewOptional = this.diningReviewRepository.findById(id);
 
         // Return if dining review id not found
         if (diningReviewOptional.isEmpty()) {
@@ -101,7 +101,7 @@ public class DiningReviewController {
 
         // Find restaurant by id
         Optional<Restaurant> restaurantOptional = this.restaurantRepository.findById(
-                diningReviewToUpdate.getRestaurantId().intValue()
+                diningReviewToUpdate.getRestaurantId()
         );
 
         // Return if restaurant id not found
