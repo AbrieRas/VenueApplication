@@ -54,6 +54,7 @@ public class DiningReviewController {
         this.restaurantRepository.save(restaurantToSave);
 
         // Add dining review
+        diningReview.setStatus(Status.RECEIVED);
         DiningReview diningReviewSaved = this.diningReviewRepository.save(diningReview);
 
         return ResponseEntity.status(HttpStatus.OK).body(diningReviewSaved);

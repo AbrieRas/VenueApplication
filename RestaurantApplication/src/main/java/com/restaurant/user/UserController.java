@@ -64,7 +64,8 @@ public class UserController {
 
         User userToUpdate = userOptional.get();
         User userUpdated = this.updateUserProperties(userToUpdate, user);
-        return ResponseEntity.status(HttpStatus.OK).body(userUpdated);
+        User userSaved = this.userRepository.save(userUpdated);
+        return ResponseEntity.status(HttpStatus.OK).body(userSaved);
     }
 
     /*
