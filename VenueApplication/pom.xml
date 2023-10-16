@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.restaurant</groupId>
-	<artifactId>RestaurantApplication</artifactId>
+	<artifactId>VenueApplication</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>RestaurantApplication</name>
 	<description>Restaurant REST API</description>
